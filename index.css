@@ -1,0 +1,32 @@
+#body{
+    font-size: 20px;
+    font-family:'Permanent Marker',cursive;
+    text-align: center;
+}
+.cellContainer
+{
+    grid-template-columns: repeat(3 ,auto);
+    display: grid;
+    margin: auto;
+    width: 245px;
+}
+#cell{
+    height: 75px;
+    width: 75px;
+    border: solid;
+    margin: auto;
+    box-shadow:0 0 0 5px;
+    cursor: pointer;
+    font-size: 50px;
+}
+#scores{
+    justify-content:space-evenly;
+    display: flex;
+}
+
+
+
+
+
+
+
