@@ -4,6 +4,10 @@ const sttatus = document.querySelector('#status')
 const restarts = document.querySelector('#restart')
 const playy =  document.querySelector('#playy')
 
+
+const player1 = document.querySelector('#player1Status')
+const player2 = document.querySelector('#player2Status')
+
 playingWith = ''
 whoWon = ''
 
@@ -44,13 +48,13 @@ function changePlay() {
     }
     else{
         playingWith = 'Computer'
+        player = 'X'
         playy.textContent = `Playing with ${playingWith}`
     }
+    scores.x = 0
+    scores.o = 0
+    scores.draws = 0
     restartBtn()
-}
-if (playingWith == 'Computer') {
-    computer = 'O'
-    player = 'X'
 }
 
 // event listener for restarting the game
@@ -70,12 +74,6 @@ function startGame() {
     }
 }
 
-
-// y = document.querySelector('#script')
-// console.log(y)
-
-
-
 function availablePicks(){
     available= []
     for (let x = 0; x < selected.length; x++) {
@@ -94,7 +92,6 @@ function compPick() {
             iPick = available[Math.floor((Math.random()*(available.length)))]
             
             
-            // console.log(x)
             box[iPick] = computer
             
             selected[iPick] = computer
@@ -117,8 +114,8 @@ function boxClicked() {
     if (playingWith == 'Computer') {
         
             if (clickable) {
-                
                 const boxIndex = this.getAttribute('cellIndex')
+                if (selected[boxIndex] == "") {
                 updateBox(this, boxIndex) //update value when a box is clicked
                 availablePicks()
                 if (!roundWon && !draw) {
@@ -126,16 +123,19 @@ function boxClicked() {
                 }
                 changePlayer()//change the player if no winner
             }
+            }
             
         }
-        else{
+        else if(playingWith == '1 V 1'){
             const boxIndex = this.getAttribute('cellIndex')
-            updateBox(this, boxIndex) //update value when a box is clicked
-            checkWin()//check if there is a winner
-            changePlayer()//change the player if no winner
+            if (selected[boxIndex] == "") {
+                updateBox(this, boxIndex) //update value when a box is clicked
+                changePlayer()//change the player if no winner
+                
+            }
+        }
     }
-    }
-
+    
     
 }
 
@@ -143,7 +143,7 @@ function boxClicked() {
 function updateBox(pick , index) {
     selected[index] = player//update the 'selected' array with the player value(X OR O) to the 
     pick.textContent = player //update a box with the player value
-    checkWin()
+    checkWin()//check if there is a winner
 
 }
 
@@ -229,6 +229,9 @@ function checkWin(){
 // function for restarting the game
 function restartBtn() {
     // player = `${player}`
+    document.querySelector('#drawScores').textContent = scores.draws
+    document.querySelector('#xScores').textContent = scores.x
+    document.querySelector('#oScores').textContent = scores.o
     if (playingWith == 'Computer') {
         if (!whoWon) {
             sttatus.textContent = `${'X'} turn`
