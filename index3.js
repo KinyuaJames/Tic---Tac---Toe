@@ -3,6 +3,7 @@ const box = document.querySelectorAll('#cell')
 const sttatus = document.querySelector('#status')
 const restarts = document.querySelector('#restart')
 const playy =  document.querySelector('#playy')
+const darkmodebtn = document.body
 
 
 const player1 = document.querySelector('#player1Status')
@@ -23,6 +24,10 @@ let running = false;
 let player = 'X'; //current start game player
 let computer = 'O';
 
+let textCollor 
+let timer
+let lastWon
+
 let selected = ["","","","","","","","",""]; //an array to add the clicked cell
 let winConditions = [
     ['0','1','2'],
@@ -41,23 +46,12 @@ computerWon = false;
 startGame()
 clickable = true;
 
-function changePlay() {
-    if (playingWith == 'Computer') {
-        playingWith = '1 V 1'
-        playy.textContent = `Playing ${playingWith}`
-    }
-    else{
-        playingWith = 'Computer'
-        player = 'X'
-        playy.textContent = `Playing with ${playingWith}`
-    }
-    scores.x = 0
-    scores.o = 0
-    scores.draws = 0
-    restartBtn()
-}
+// dark mode selector
+document.querySelector(".switch > input").addEventListener("click", function (event) {
+    document.querySelector("body").classList.toggle("darkmode");
+  });
 
-// event listener for restarting the game
+
 function startGame() {
     playingWith = '1 V 1'
     if (playingWith == 'Computer') {
@@ -74,6 +68,27 @@ function startGame() {
     }
 }
 
+
+function changePlay() {
+    
+    if (playingWith == 'Computer') {
+        playingWith = '1 V 1'
+        lastWon = 'X'
+        playy.textContent = `Playing ${playingWith}`
+    }
+    else{
+        playingWith = 'Computer'
+        player = 'X'
+        lastWon = 'X'
+        playy.textContent = `Playing with ${playingWith}`
+    }
+    scores.x = 0
+    scores.o = 0
+    scores.draws = 0
+    restartBtn()
+}
+
+
 function availablePicks(){
     available= []
     for (let x = 0; x < selected.length; x++) {
@@ -83,52 +98,79 @@ function availablePicks(){
         }
     }
 }
+
+
 function compPick() {
     clickable = false;
     if (running) {
-        setTimeout(function()
+        if (player == 'X'){
+            textCollor = 'red'
+        }
+        else{
+            textCollor = 'blue'
+        }
+        timer = setTimeout(function()
         {
-            x = Math.floor((Math.random()*(available.length)))
+            // x = Math.floor((Math.random()*(available.length)))
+            // iPick = available[x]
             iPick = available[Math.floor((Math.random()*(available.length)))]
             
             
             box[iPick] = computer
             
             selected[iPick] = computer
+
+            box[iPick].style.color = textCollor
             box[iPick].textContent = computer
             checkWin()
             if (!roundWon && !draw) {
                 sttatus.textContent = `${player} turn`
+                textCollor = 'blue'
             }
             clickable = true
-        },2000 )
+        }, 10)
     }
-
-
-    
 }
+
 
 // when a cell is clicked
 function boxClicked() {
     if (running) {
-    if (playingWith == 'Computer') {
-        
+        // executed when playing with the computer 
+        if (playingWith == 'Computer') {
+            
             if (clickable) {
                 const boxIndex = this.getAttribute('cellIndex')
                 if (selected[boxIndex] == "") {
-                updateBox(this, boxIndex) //update value when a box is clicked
-                availablePicks()
-                if (!roundWon && !draw) {
-                    sttatus.textContent = `${computer} turn`
+                    // console.log(this, 'now')
+                    if (player == 'X'){
+                        textCollor = 'blue'
+                    }
+                    else{
+                        textCollor = 'red'
+                    }
+                    updateBox(this, boxIndex) //update value when a box is clicked
+                    availablePicks()
+                    if (!roundWon && !draw) {
+                        sttatus.textContent = `${computer} turn`
+                        // textCollor = 'red'
+                    }
+                    changePlayer()//change the player if no winner
                 }
-                changePlayer()//change the player if no winner
-            }
             }
             
         }
+
+        //executed when playin with another person, 1 v 1
         else if(playingWith == '1 V 1'){
             const boxIndex = this.getAttribute('cellIndex')
             if (selected[boxIndex] == "") {
+                if (player == 'X'){
+                    textCollor = 'red'
+                }
+                else{
+                    textCollor = 'blue'
+                }
                 updateBox(this, boxIndex) //update value when a box is clicked
                 changePlayer()//change the player if no winner
                 
@@ -142,21 +184,23 @@ function boxClicked() {
 // updating the cell on the browser
 function updateBox(pick , index) {
     selected[index] = player//update the 'selected' array with the player value(X OR O) to the 
+    pick.style.color = textCollor
     pick.textContent = player //update a box with the player value
     checkWin()//check if there is a winner
-
+    
 }
 
-// change player
+// change player, chenge the player to X or O
 function changePlayer(){
+    // Executed if playing with comp
     if (playingWith == 'Computer') {
         compPick()
-        
     }
+    // executed on 1 v 1
     else{
-         player = (player == 'X') ? 'O':'X' //the current player is X, Change to O otherwise X
+        player = (player == 'X') ? 'O':'X' //the current player is X, Change to O otherwise X
         if (running) {
-            sttatus.textContent = `${player} turn` //If game is not runnig, update the player turn
+            sttatus.textContent = `${player} turn` //If game is not running, update the player turn
         }
     }
 }
@@ -200,48 +244,68 @@ function checkWin(){
             running = false;
         }
     }
+    // update scores
     document.querySelector('#drawScores').textContent = scores.draws
     document.querySelector('#xScores').textContent = scores.x
     document.querySelector('#oScores').textContent = scores.o
     
+    // set relevant conditions
     if (whoWon == computer ) {
         computerWon = true;
-        
     }
     else{
         computerWon = false
     }
-    // else if (whoWon == player && whoWon == "X") {
-    //     player == 'O'
-    // }
     if (roundWon) {
         sttatus.textContent = `${whoWon} WINS!!`
         running =false
-        
     }
     else if(draw){
         sttatus.textContent = `its a DRAW!!`
-
     }
-    
 }
 
 // function for restarting the game
 function restartBtn() {
+   
+    // Conditions if the game is restarted when no one has won yet
+    if (running) {
+        if (!lastWon) {
+            whoWon = 'X'
+        }
+        else{
+            whoWon = lastWon
+            if (playingWith == 'Computer') {
+                if (whoWon == 'O') {
+                    computerWon = true
+                }
+            }
+        }
+    }
+    else{
+        lastWon = whoWon
+    }
+
+
+    clearTimeout(timer)
     // player = `${player}`
     document.querySelector('#drawScores').textContent = scores.draws
     document.querySelector('#xScores').textContent = scores.x
     document.querySelector('#oScores').textContent = scores.o
+
     if (playingWith == 'Computer') {
         if (!whoWon) {
+            lastWon = 'X'
             sttatus.textContent = `${'X'} turn`
         }
         else{
             sttatus.textContent = `${whoWon} turn`
-
         }
+
         selected = ["","","","","","","","",""] //resetting the selected boxes
+        availablePicks()
         box.forEach(pick => pick.textContent = '') //resetting the boxes
+        box.forEach(pick => pick.style.color = 'black')
         running = true;
         // computerWon = false;
         clickable = true
@@ -253,11 +317,14 @@ function restartBtn() {
             computerWon= false
         }
     }
+
+    // conditions when playing 1v1
     else{
         player = `${player}`
         sttatus.textContent = `${player} turn`
         selected = ["","","","","","","","",""] //resetting the selected boxes
         box.forEach(pick => pick.textContent = '') //resetting the boxes
+        box.forEach(pick => pick.style.color = 'black')
         running = true;
     }
 }

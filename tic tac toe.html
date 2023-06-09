@@ -1,11 +1,16 @@
 <html>
     <body id="body">
         <link rel="stylesheet" href="index.css">
-        <span>
-            <h1>
-                TIC TAC TOE
-            </h1>
-        </span>
+        <div style=" display:flex; justify-content:end;">
+            <label class="switch">
+                  <input type="checkbox">
+                  <div class="switch__button"></div>
+                  <div class="switch__background"></div>
+            </label>
+        </div>
+        <h2 style="margin-top:-33px">
+            TIC TAC TOE
+        </h2>
         <div id="scores">
             <h5>
                 X wins:
@@ -18,7 +23,7 @@
                 </span>
             </h5>
             <h5>
-                0 wins:
+                O wins:
              <span id="oScores">
              </span>
             </h5>
@@ -37,8 +42,21 @@
         <h2 id="status"></h2>
 
         <h5 id = 'playy'> </h5>
-        <button onclick="changePlay()"> Change Play</button>
-        <button id="restart">Restart</button>
+        <div class="button-container">
+
+            <div class="button-container-1">
+                <span class="mas">Change Play</span>
+                <button class="btn btn-primary" 
+                id='work' type="button" name="Hover"
+                onclick="changePlay()"> Change Play</button>
+            </div>
+            <div class="button-container-3">
+                <span class="mas">Restart</span>
+                <button class="btn btn-info" 
+                type="button" name="Hover"
+                id="restart" >Restart</button>
+            </div>
+        </div>
     </body>
 
     <script id="script" src="index3.js"></script>
